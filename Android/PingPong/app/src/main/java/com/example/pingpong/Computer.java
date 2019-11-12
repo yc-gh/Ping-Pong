@@ -15,14 +15,15 @@ public class Computer implements Opponent{
     //Control score
     private int score;
 
-    //Controlling Y coordinate so that paddle won't go outside the screen
-    private int maxY;
-    private int minY;
+    //Control speed for paddle
+    private float fastSpeed;
+    private float slowSpeed;
 
     private int screenX;
     private int screenY;
 
     private Rect computerRect;
+
 
     public Computer(Context context, int screenX, int screenY) {
         x = screenX - 75;
@@ -30,14 +31,12 @@ public class Computer implements Opponent{
 
         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.paddle2);
 
-        //calculating maxY
-        maxY = screenY - bitmap.getHeight();
-
-        //top edge's y point is 0 so min y will always be zero
-        minY = 0;
-
         //Assign initial score 0
         score = 0;
+
+        //Set fast and slow speeds
+        fastSpeed = 0.16f;
+        slowSpeed = 0.01f;
 
         this.screenX = screenX;
         this.screenY = screenY;
@@ -49,14 +48,14 @@ public class Computer implements Opponent{
 
         int paddleMiddle = bitmap.getHeight()/2 - ball.getBitmap().getHeight()/2;
 
-        //If ball is on right side of screen, set speed as difference in ball and paddle * 0.16
+        //If ball is on right side of screen, set speed as difference in ball and paddle * fast speed
         if(ball.getX() > screenX/2) {
-            y += (ball.getY() - (y + paddleMiddle))*0.16;
+            y += (ball.getY() - (y + paddleMiddle))*fastSpeed;
         }
 
-        //Else speed multiplier is 0.01 (ball on left side of screen)
+        //Else speed multiplier is slow speed (ball on left side of screen)
         else {
-            y += (ball.getY() - (y + paddleMiddle))*0.01;
+            y += (ball.getY() - (y + paddleMiddle))*slowSpeed;
         }
 
         computerRect.left = x;

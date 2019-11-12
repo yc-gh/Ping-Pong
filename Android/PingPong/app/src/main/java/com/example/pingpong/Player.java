@@ -15,10 +15,6 @@ public class Player {
     //Control Score
     private int score;
 
-    //Controlling Y coordinate so that paddle won't go outside the screen
-    private int maxY;
-    private int minY;
-
     //Rectangle around player bitmap -- for collision detection
     private Rect playerRect;
 
@@ -27,12 +23,6 @@ public class Player {
         y = screenY/2;
 
         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.paddle1);
-
-        //calculating maxY
-        maxY = screenY - bitmap.getHeight();
-
-        //top edge's y point is 0 so min y will always be zero
-        minY = 0;
 
         //Assign initial score -1
         //The ball is constructed at middle of the screen

@@ -13,24 +13,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button button1;
     private Button button2;
 
+    //Override onCreate method of Activity class
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Getting the button
+        //Getting the button objects
         button1 = findViewById(R.id.button1player);
         button2 = findViewById(R.id.button2player);
 
-        //Adding a click listener
+        //Adding onClick listeners
         button1.setOnClickListener(this);
         button2.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-
-        //Starting game activity
+        //Create Intent for GameActivity
         Intent i = new Intent(this, GameActivity.class);
 
         switch(v.getId())
@@ -43,8 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 i.putExtra("opponent", "player");
                 break;
         }
-
+        //Start GameActivity
         startActivity(i);
-
     }
 }

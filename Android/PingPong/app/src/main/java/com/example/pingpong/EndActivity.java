@@ -21,6 +21,7 @@ public class EndActivity extends AppCompatActivity{
         String winner = "";
 
         //Bundle -- A mapping from String keys to various Parcelable values
+        //Parcel class is used to store messages
         //Used for retrieving information passed between activities in the form of key - value pairs
         Bundle extras = getIntent().getExtras();
         if(extras != null)
@@ -42,7 +43,5 @@ public class EndActivity extends AppCompatActivity{
                 finish();
             }
         });
-
-
     }
 }

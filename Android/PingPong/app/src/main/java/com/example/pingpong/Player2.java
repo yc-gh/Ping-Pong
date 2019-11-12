@@ -15,10 +15,6 @@ public class Player2 implements Opponent {
     //Control score
     private int score;
 
-    //Controlling Y coordinate so that paddle won't go outside the screen
-    private int maxY;
-    private int minY;
-
     private Rect playerRect;
 
     public Player2(Context context, int screenX, int screenY) {
@@ -26,12 +22,6 @@ public class Player2 implements Opponent {
         y = screenY/2;
 
         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.paddle2);
-
-        //calculating maxY
-        maxY = screenY - bitmap.getHeight();
-
-        //top edge's y point is 0 so min y will always be zero
-        minY = 0;
 
         //Assign initial score -1
         //The ball is constructed at middle of the screen

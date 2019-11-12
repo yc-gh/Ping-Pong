@@ -8,10 +8,15 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.os.Build;
+import android.os.Looper;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.VelocityTracker;
+
+import androidx.annotation.RequiresApi;
 
 public class GameView extends SurfaceView implements Runnable {
     volatile boolean playing;
@@ -87,12 +92,10 @@ public class GameView extends SurfaceView implements Runnable {
         while (playing) {
             update();
             draw();
-            //SurfaceView automatically refreshes at VSYNC rate
         }
     }
 
     private void update() {
-
         //End game when score reaches 10
         if(player.getScore() >= 10 || opponent.getScore() >= 10) {
             endGame();
@@ -117,6 +120,7 @@ public class GameView extends SurfaceView implements Runnable {
     private void draw() {
         //Get drawing surface and lock it for drawing
         if (surfaceHolder.getSurface().isValid()) {
+
             canvas = surfaceHolder.lockCanvas();
             canvas.drawColor(Color.rgb(0,0,0));
 

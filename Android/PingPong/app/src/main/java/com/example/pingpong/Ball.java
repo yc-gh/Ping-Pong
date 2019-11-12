@@ -1,23 +1,35 @@
 package com.example.pingpong;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
+
+import java.util.concurrent.ThreadLocalRandom;
+
 public class Ball {
+
+    Context context;
+
     //Bitmap image of the ball
     private Bitmap bitmap;
+
+    //Volatile fields used so that UI thread and game thread
+    // fetch updated values from main memory instead of cached
 
     //Coordinate trackers
     private volatile int x;
     private volatile int y;
 
     //Starting coordinates
-    private int startX;
-    private int startY;
+    private volatile int startX;
+    private volatile int startY;
 
     //Max bounds for ball positions
     private int maxY;
@@ -26,8 +38,8 @@ public class Ball {
     private int minX;
 
     //Default speeds
-    private int defSpeedX;
-    private int defSpeedY;
+    private volatile int defSpeedX;
+    private volatile int defSpeedY;
 
     //Current speeds
     private volatile int speedX;
@@ -39,10 +51,14 @@ public class Ball {
     //Track which paddle ball collided with -- to avoid repeated collisions in small time frame
     private volatile int collideSide;
 
+    //Track total score for game levels
+    private int totalScore;
+
     //Rectangle around the ball -- for collision detection
     private Rect ballRect;
 
     public Ball(Context context, int screenX, int screenY) {
+        this.context = context;
         startX = x = screenX/2;
         startY = y = screenY/2;
 
@@ -58,16 +74,27 @@ public class Ball {
 
         minX = 0;
 
-        defSpeedX = speedX = 20;
+        defSpeedX = speedX = 15;
         defSpeedY = speedY = 10;
 
         maxSpeed = 30;
+
+        //Initialize total score
+        totalScore = 0;
 
         //Set the rectangle around the ball
         ballRect = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
     }
 
-    public void update(GameView obj, String[] timer, Player player1, Opponent player2) {
+    public synchronized void update(GameView obj, String[] timer, Player player1, Opponent player2) {
+
+        if(totalScore >=5 && totalScore < 10) {
+            defSpeedX = 20;
+        }
+        else if(totalScore >=10) {
+            defSpeedX = 25;
+        }
+
         x += speedX;
         y += speedY;
 
@@ -85,11 +112,14 @@ public class Ball {
         //Else if ball touches left or right edge
         //Increase score for opposite side
         else if(x < minX) {
+            //Increment score when either side scores (reset is called)
+            totalScore++;
             player2.incScore();
             reset(obj, timer);
         }
 
         else if(x > maxX) {
+            totalScore++;
             player1.incScore();
             reset(obj, timer);
         }
@@ -109,7 +139,6 @@ public class Ball {
         x = startX;
         y = startY;
 
-
         //Set speed 0 while countdown is shown
         speedY = 0;
         speedX = 0;
@@ -119,7 +148,8 @@ public class Ball {
         //All drawing in the view must be done from within the UI thread, therefore actual drawing cannot be done here
         //This just modifies the text that is drawn in the draw method
         //Does not freeze UI thread
-        obj.post(new Runnable() {
+
+        ((Activity)context).runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
@@ -135,6 +165,7 @@ public class Ball {
                         timer[0] = "";
 
                         //Reset speed of ball
+                        //And randomly set direction to left or right
                         speedX = defSpeedX;
                         speedY = defSpeedY;
 

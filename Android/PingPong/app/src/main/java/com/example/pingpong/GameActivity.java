@@ -1,5 +1,7 @@
 package com.example.pingpong;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
@@ -21,18 +23,25 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //FrameLayout to allow multiple child components to stack on each other
-        //This is used to insert image button over the game draw area
+        //This is used to insert image buttons over the game drawing area
         FrameLayout game = new FrameLayout(this);
 
         //Layout used for setting location and size of image button
         RelativeLayout gameWidgets = new RelativeLayout(this);
 
+        //Image buttons to pause and quit the game
         ImageButton endGameButton = new ImageButton(this);
+        ImageButton pauseGameButton = new ImageButton(this);
 
-        //Set image used for button
-        endGameButton.setImageResource(R.drawable.closebtn);
+        //Set image bitmaps used for buttons
+        Bitmap closeButton = BitmapFactory.decodeResource(this.getResources(), R.drawable.closebtn);
+        Bitmap pauseButton = BitmapFactory.decodeResource(this.getResources(), R.drawable.pausebtn);
+        endGameButton.setImageBitmap(closeButton);
+        pauseGameButton.setImageBitmap(pauseButton);
 
-        RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,  RelativeLayout.LayoutParams.WRAP_CONTENT);
+        //Set layout parameters for buttons
+        RelativeLayout.LayoutParams endButtonParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,  RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams pauseButtonParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,  RelativeLayout.LayoutParams.WRAP_CONTENT);
 
         //Getting display object
         Display display = getWindowManager().getDefaultDisplay();
@@ -49,10 +58,10 @@ public class GameActivity extends AppCompatActivity {
         gameView = new GameView(this, size.x, size.y, opponent.equals("computer"));
 
         //Set image button parameters
-        buttonParams.leftMargin = size.x/2;
-        buttonParams.topMargin = size.y - 70;
-        buttonParams.width = 70;
-        buttonParams.height = 70;
+        endButtonParams.leftMargin = size.x/2 - 50;
+        endButtonParams.topMargin = size.y - 70;
+        endButtonParams.width = closeButton.getWidth();
+        endButtonParams.height = closeButton.getHeight();
 
         //End the game when close button is pressed
         endGameButton.setOnClickListener(new View.OnClickListener() {
@@ -63,7 +72,32 @@ public class GameActivity extends AppCompatActivity {
         });
 
         //Add button to relative layout
-        gameWidgets.addView(endGameButton, buttonParams);
+        gameWidgets.addView(endGameButton, endButtonParams);
+
+        //Set pause button parameters
+        pauseButtonParams.leftMargin = size.x/2 + 50;
+        pauseButtonParams.topMargin = size.y - 70;
+        pauseButtonParams.width = pauseButton.getWidth();
+        pauseButtonParams.height = pauseButton.getHeight();
+
+        //Pause/Resume the game when pause button is pressed
+        pauseGameButton.setOnClickListener(new View.OnClickListener() {
+            boolean playing = true;
+            @Override
+            public void onClick(View view) {
+                if(playing) {
+                    gameView.pause();
+                    playing = false;
+                }
+                else {
+                    gameView.resume();
+                    playing = true;
+                }
+            }
+        });
+
+        //Add button to relative layout
+        gameWidgets.addView(pauseGameButton, pauseButtonParams);
 
         //Add game and game widget to frame layout
         game.addView(gameView);
